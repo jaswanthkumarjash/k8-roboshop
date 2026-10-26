@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: roboshop
+  # These are replicaset labels, which are used to identify the pods that belong to this deployment.
+  labels:
+    project: roboshop
+    environment: dev
+    component: mongodb
+    tier: db
+spec:
+  replicas: 1
+  selector:
+    # This selector is used to identify the pods that belong to this deployment. It must match the labels of the pods defined in the template below.
+    matchLabels:
+      project: roboshop
+      environment: dev
+      component: mongodb
+      tier: db
+    # Pod definition.
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        environment: dev
+        component: mongodb
+        tier: db
+    spec:
+      containers:
+      - name: mongodb
+        image: jaswanthdocker12/mongodb:v1

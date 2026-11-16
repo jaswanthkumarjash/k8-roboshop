@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: rabbitmq
+  labels:
+    project: roboshop
+    environment: dev
+    component: rabbitmq
+    tier: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: roboshop
+      environment: dev
+      component: rabbitmq
+      tier: db
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        environment: dev
+        component: rabbitmq
+        tier: db
+    spec:
+      containers:
+      - name: rabbitmq
+        image: jaswanthdocker12/rabbitmq:v1
+        imagePullPolicy: Always
+        readinessProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "70Mi"
+          limits:
+            cpu: "100m"
+            memory: "70Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: rabbitmq
+spec:
+  selector:
+    project: roboshop
+    environment: dev
+    component: rabbitmq
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 5672
+    targetPort: 5672

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: roboshop
+  labels:
+    project: roboshop
+    environment: dev
+    component: redis
+    tier: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: roboshop
+      environment: dev
+      component: redis
+      tier: db
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        environment: dev
+        component: redis
+        tier: db
+    spec:
+      containers:
+      - name: redis
+        image: jaswanthdocker12/redis:v1
+        imagePullPolicy: Always
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "70Mi"
+          limits:
+            cpu: "100m"
+            memory: "70Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: roboshop
+spec:
+  selector:
+    project: roboshop
+    environment: dev
+    component: redis
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017

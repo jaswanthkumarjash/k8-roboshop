@@ -127,7 +127,7 @@ spec:
             memory: "70Mi"
         volumeMounts:
         - name: nginx-vol
-          path: /etc/nginx/nginx.conf
+          mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
       volumes:
       - name: nginx-vol

@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shipping
+  namespace: roboshop
+  labels:
+    project: roboshop
+    environment: dev
+    component: shipping
+    tier: backend
+data:
+  CART_ENDPOINT: cart:8080
+  DB_HOST: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  namespace: roboshop
+  labels:
+    project: roboshop
+    environment: dev
+    component: shipping
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: roboshop
+      environment: dev
+      component: shipping
+      tier: backend
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        environment: dev
+        component: shipping
+        tier: backend
+    spec:
+      containers:
+      - name: shipping
+        image: jaswanthdocker12/shipping:v1
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: shipping
+        ports:
+        - name: port-name
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: port-name
+          failureThreshold: 1
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: port-name
+          failureThreshold: 1
+          periodSeconds: 15
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "70Mi"
+          limits:
+            cpu: "100m"
+            memory: "70Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  namespace: roboshop
+spec:
+  selector:
+    project: roboshop
+    environment: dev
+    component: shipping
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
